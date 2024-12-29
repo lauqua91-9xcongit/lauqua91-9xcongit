@@ -1,0 +1,46 @@
+name: Continuous Visit Blog using Selenium
+
+on:
+  workflow_dispatch:  # Cho phép kích hoạt thủ công
+
+jobs:
+  visit_blog:
+    runs-on: ubuntu-latest  # Chạy trên hệ điều hành Ubuntu
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install selenium
+        pip install webdriver-manager  # Tự động cài đặt ChromeDriver
+
+    - name: Visit the blog continuously using Selenium
+      run: |
+        # Tạo script Python để chạy Selenium trong vòng lặp
+        echo "from selenium import webdriver" > selenium.py
+        echo "from selenium.webdriver.chrome.service import Service" >> selenium.py
+        echo "from webdriver_manager.chrome import ChromeDriverManager" >> selenium.py
+        echo "from selenium.webdriver.chrome.options import Options" >> selenium.py
+        echo "import time" >> selenium.py
+        echo "" >> selenium.py
+        echo "options = Options()" >> selenium.py
+        echo "options.add_argument('--headless')" >> selenium.py
+        echo "options.add_argument('--no-sandbox')" >> selenium.py
+        echo "options.add_argument('--disable-dev-shm-usage')" >> selenium.py
+        echo "while True:" >> selenium.py
+        echo "    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)" >> selenium.py
+        echo "    driver.get('https://anivia9010.blogspot.com')" >> selenium.py
+        echo "    time.sleep(5)" >> selenium.py  # Chờ 5 giây để tải trang và tài nguyên JavaScript
+        echo "    driver.quit()" >> selenium.py
+        echo "    time.sleep(300)" >> selenium.py  # Chờ 5 phút (300 giây) trước khi truy cập lại trang
+
+        # Chạy script Python với Selenium
+        python selenium.py
