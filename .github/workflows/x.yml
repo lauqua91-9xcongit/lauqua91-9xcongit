@@ -1,0 +1,35 @@
+name: Open Website Every Hour with JS
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Mỗi giờ chẵn (00 phút mỗi giờ)
+
+jobs:
+  open-website:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Cài đặt Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Cài đặt Puppeteer
+      - name: Install dependencies
+        run: |
+          npm install puppeteer
+
+      # Chạy Puppeteer để mở trang web
+      - name: Open website using Puppeteer
+        run: |
+          node -e "
+            const puppeteer = require('puppeteer');
+            (async () => {
+              const browser = await puppeteer.launch({ headless: true });
+              const page = await browser.newPage();
+              await page.goto('https://anivia9010.blogspot.com');
+              await page.waitForTimeout(5000);  # Chờ 5 giây để tải đầy đủ JavaScript
+              await browser.close();
+            })();
+          "
