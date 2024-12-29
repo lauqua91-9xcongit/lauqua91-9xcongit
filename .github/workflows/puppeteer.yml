@@ -1,0 +1,38 @@
+name: Continuous Visit Blog using Puppeteer
+
+on:
+  workflow_dispatch:  # Cho phép kích hoạt thủ công
+
+jobs:
+  visit_blog:
+    runs-on: ubuntu-latest  # Chạy trên hệ điều hành Ubuntu
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'  # Chọn phiên bản Node.js thích hợp
+
+    - name: Install dependencies
+      run: |
+        npm install puppeteer  # Cài đặt Puppeteer
+
+    - name: Visit the blog continuously using Puppeteer
+      run: |
+        # Tạo script Puppeteer trong vòng lặp
+        echo "const puppeteer = require('puppeteer');" > puppeteer.js
+        echo "async function visit() {" >> puppeteer.js
+        echo "  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });" >> puppeteer.js
+        echo "  const page = await browser.newPage();" >> puppeteer.js
+        echo "  await page.goto('https://anivia9010.blogspot.com');" >> puppeteer.js
+        echo "  await page.waitForTimeout(5000);  // Chờ 5 giây để tải trang" >> puppeteer.js
+        echo "  await browser.close();" >> puppeteer.js
+        echo "  setTimeout(visit, 300000);  // Đợi 5 phút (300 giây) trước khi truy cập lại" >> puppeteer.js
+        echo "}" >> puppeteer.js
+        echo "visit();" >> puppeteer.js
+
+        # Chạy script Puppeteer
+        node puppeteer.js
